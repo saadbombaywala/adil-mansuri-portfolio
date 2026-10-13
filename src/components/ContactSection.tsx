@@ -5,14 +5,38 @@ export const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleWhatsAppSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Portfolio Inquiry from ${formData.name}`);
+    if (!formData.name.trim() || !formData.message.trim()) {
+      alert('Please fill in your name and message before sending.');
+      return;
+    }
+    const text = encodeURIComponent(
+      `*Academic Architecture Portfolio Inquiry*\n\n` +
+      `*Name:* ${formData.name}\n` +
+      `*Email:* ${formData.email || 'Not specified'}\n` +
+      (formData.phone ? `*Phone:* ${formData.phone}\n` : '') +
+      `\n*Message / Inquiry:*\n${formData.message}`
+    );
+    window.open(`https://wa.me/${PERSONAL_INFO.whatsapp}?text=${text}`, '_blank');
+  };
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name.trim() || !formData.message.trim()) {
+      alert('Please fill in your name and message before sending.');
+      return;
+    }
+    const subject = encodeURIComponent(`Architecture Portfolio Inquiry from ${formData.name}`);
     const body = encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n` +
+      (formData.phone ? `Phone: ${formData.phone}\n` : '') +
+      `\nMessage:\n${formData.message}`
     );
     window.location.href = `mailto:${PERSONAL_INFO.email}?subject=${subject}&body=${body}`;
   };
@@ -21,20 +45,20 @@ export const ContactSection: React.FC = () => {
     <section id="three">
       <h2>Get In Touch</h2>
       <p>
-        Feel free to reach out regarding academic inquiries, architectural reviews, or collaboration opportunities. My portfolio sheets and technical drawings are available for studio review.
+        Feel free to reach out regarding academic inquiries, architectural reviews, or collaboration opportunities. Inquiries sent via the form below are delivered directly to Adil Mansuri's WhatsApp and email.
       </p>
 
       <div className="contact-desktop-row">
         {/* Contact Form */}
         <div className="contact-form-side">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleWhatsAppSubmit}>
             <div className="form-row">
               <div className="form-col">
                 <input
                   type="text"
                   name="name"
                   id="name"
-                  placeholder="Name"
+                  placeholder="Your Name *"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -45,35 +69,53 @@ export const ContactSection: React.FC = () => {
                   type="email"
                   name="email"
                   id="email"
-                  placeholder="Email"
+                  placeholder="Your Email *"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
             </div>
+
+            <div>
+              <input
+                type="text"
+                name="phone"
+                id="phone"
+                placeholder="Your Phone Number (Optional)"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
+            </div>
+
             <div>
               <textarea
                 name="message"
                 id="message"
-                placeholder="Message"
+                placeholder="Message / Inquiry *"
                 rows={4}
                 required
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               />
             </div>
+
             <ul className="actions">
               <li>
-                <button type="submit" className="button">
-                  Send Message
+                <button type="submit" className="button" title="Send inquiry directly to Adil's WhatsApp">
+                  Send via WhatsApp
+                </button>
+              </li>
+              <li>
+                <button type="button" className="button" onClick={handleEmailSubmit} title="Send inquiry directly to Adil's Email">
+                  Send via Email
                 </button>
               </li>
             </ul>
           </form>
         </div>
 
-        {/* Text-Based Contact Info List with Simple Icons matching sec_019 and sec_038 */}
+        {/* Text-Based Contact Info List with Simple Icons matching reference video */}
         <div className="contact-info-side">
           <ul className="contact-list">
             <li>
@@ -93,8 +135,12 @@ export const ContactSection: React.FC = () => {
                 <line x1="12" y1="18" x2="12.01" y2="18" />
               </svg>
               <span>
+                <a href={`https://wa.me/${PERSONAL_INFO.whatsapp}`} target="_blank" rel="noopener noreferrer" className="dotted-link">
+                  WhatsApp: +91 {PERSONAL_INFO.phone}
+                </a>
+                <br />
                 <a href={`tel:${PERSONAL_INFO.phone}`} className="dotted-link">
-                  {PERSONAL_INFO.phone}
+                  Call: +91 {PERSONAL_INFO.phone}
                 </a>
               </span>
             </li>
