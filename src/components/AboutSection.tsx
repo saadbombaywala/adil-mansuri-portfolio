@@ -3,70 +3,25 @@ import { PERSONAL_INFO } from '../data/portfolioData';
 
 export const AboutSection: React.FC = () => {
   return (
-    <section className="content-section" id="about">
-      <div className="section-header">
-        <span className="section-eyebrow">Academic Background</span>
-        <h2 className="section-title">About Adil Mansuri</h2>
-        <div className="section-rule" />
-      </div>
-
-      <p className="about-intro-lead">
-        {PERSONAL_INFO.bioSummary}
+    <section id="one">
+      <header className="major">
+        <h2>
+          I am an aspiring architect passionate about concept design, interior design, and architectural visualization.
+        </h2>
+      </header>
+      <p>
+        {PERSONAL_INFO.introduction}
       </p>
-
-      <div className="about-grid">
-        {/* Education Timeline */}
-        <div className="info-block">
-          <div className="info-block-header">
-            <h3 className="info-block-title">
-              Academic Education
-            </h3>
-          </div>
-          <div className="education-list">
-            {PERSONAL_INFO.education.map((item, index) => (
-              <div key={index} className="education-card">
-                <div className="education-degree">{item.degree}</div>
-                <div className="education-institution">{item.institution}</div>
-                {'enrollment' in item && (
-                  <div className="info-sub">Enrollment: {item.enrollment}</div>
-                )}
-                <div className="education-desc">{item.description}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Academic Focus & Institute Reference */}
-        <div className="info-block">
-          <div className="info-block-header">
-            <h3 className="info-block-title">
-              Institutional Profile
-            </h3>
-          </div>
-          <div className="info-block-content">
-            <div className="info-item">
-              <span className="info-label">Institution</span>
-              <span className="info-value">{PERSONAL_INFO.instituteFullName} ({PERSONAL_INFO.institute})</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">Enrollment Number</span>
-              <span className="info-value">{PERSONAL_INFO.enrollmentNumber}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">Location</span>
-              <span className="info-value">{PERSONAL_INFO.location}</span>
-            </div>
-            <div className="info-item">
-              <span className="info-label">Core Specializations</span>
-              <div className="badge-row" style={{ marginTop: '0.4rem' }}>
-                {PERSONAL_INFO.specializations.map((spec, i) => (
-                  <span key={i} className="skill-badge">{spec}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <p style={{ color: '#999999', fontSize: '0.9em' }}>
+        Currently pursuing Diploma in Architecture at {PERSONAL_INFO.instituteFullName} ({PERSONAL_INFO.institute} &middot; Enrollment: {PERSONAL_INFO.enrollmentNumber}) after completing secondary education (10th Pass GSEB, 2024). Specializations include sustainable architecture, technical drafting in AutoCAD, 3D modeling in SketchUp, Photoshop post-production, and V-Ray visualization.
+      </p>
+      <ul className="actions">
+        <li>
+          <a href="#two" className="button">
+            Learn More
+          </a>
+        </li>
+      </ul>
     </section>
   );
 };

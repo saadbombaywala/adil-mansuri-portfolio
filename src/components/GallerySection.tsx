@@ -1,132 +1,107 @@
 import React, { useState, useMemo } from 'react';
 import { CATEGORIES, PORTFOLIO_PROJECTS } from '../data/portfolioData';
 import type { ProjectSheet } from '../data/portfolioData';
-import { ProjectCard } from './ProjectCard';
 
 interface GallerySectionProps {
   onOpenLightbox: (sheet: ProjectSheet, activeList: ProjectSheet[]) => void;
 }
 
 export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenLightbox }) => {
+  const [isFullPortfolio, setIsFullPortfolio] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const filteredSheets = useMemo(() => {
+  // Curated 6 representative works matching the 6 items in the reference video
+  const curatedRecentWorks = useMemo(() => {
+    const featuredIds = ['page-04', 'page-16', 'page-20', 'page-25', 'page-45', 'page-53'];
+    return featuredIds
+      .map((id) => PORTFOLIO_PROJECTS.find((p) => p.id === id))
+      .filter((p): p is ProjectSheet => Boolean(p));
+  }, []);
+
+  // Filtered sheets when Full Portfolio is expanded
+  const displaySheets = useMemo(() => {
+    if (!isFullPortfolio) {
+      return curatedRecentWorks;
+    }
     if (selectedCategory === 'all') {
       return PORTFOLIO_PROJECTS;
     }
-    return PORTFOLIO_PROJECTS.filter((sheet) => sheet.category === selectedCategory);
-  }, [selectedCategory]);
-
-  // Specific groups for grouped view when "all" is active
-  const groupedSections = useMemo(() => {
-    return CATEGORIES.filter(c => c.id !== 'all').map(cat => ({
-      ...cat,
-      sheets: PORTFOLIO_PROJECTS.filter(s => s.category === cat.id)
-    }));
-  }, []);
+    return PORTFOLIO_PROJECTS.filter((s) => s.category === selectedCategory);
+  }, [isFullPortfolio, selectedCategory, curatedRecentWorks]);
 
   return (
-    <section className="content-section" id="work">
-      <div className="section-header">
-        <span className="section-eyebrow">Academic Portfolio</span>
-        <h2 className="section-title">Recent Work / Selected Academic Work</h2>
-        <p className="section-subtitle">
-          Original technical drawings, rendered floor plans, structural details, working drawings, interior technical sheets, and landscape design boards from the academic curriculum.
-        </p>
-        <div className="section-rule" />
-      </div>
+    <section id="two">
+      <h2>Recent Work</h2>
 
-      {/* Filter Navigation Tabs */}
-      <div className="gallery-filter-bar" role="tablist" aria-label="Portfolio Categories">
-        {CATEGORIES.map((cat) => {
-          const isActive = selectedCategory === cat.id;
-          return (
-            <button
-              key={cat.id}
-              role="tab"
-              aria-selected={isActive}
-              className={`filter-tab ${isActive ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat.id)}
-            >
-              <span>{cat.shortTitle}</span>
-              <span className="filter-count">({cat.count})</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Status Bar */}
-      <div className="gallery-status-bar">
-        <span>
-          Showing <strong>{filteredSheets.length}</strong> architectural sheets
-        </span>
-        <span style={{ fontSize: '0.8rem' }}>
-          *Click any drawing sheet to view in full resolution
-        </span>
-      </div>
-
-      {/* Display by Category or Filtered Grid */}
-      {selectedCategory !== 'all' ? (
-        <div>
-          <div style={{ marginBottom: '1.75rem', padding: '1rem 1.25rem', background: '#f8fafc', borderRadius: '8px', borderLeft: '3px solid var(--accent)' }}>
-            <h3 style={{ fontSize: '1.15rem', color: 'var(--text-main)', marginBottom: '0.25rem' }}>
-              {CATEGORIES.find(c => c.id === selectedCategory)?.title}
-            </h3>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              {CATEGORIES.find(c => c.id === selectedCategory)?.description}
-            </p>
-          </div>
-
-          <div className="gallery-grid">
-            {filteredSheets.map((sheet) => (
-              <ProjectCard
-                key={sheet.id}
-                sheet={sheet}
-                onOpenLightbox={(item) => onOpenLightbox(item, filteredSheets)}
-              />
-            ))}
-          </div>
-        </div>
-      ) : (
-        /* Grouped Display when "All Works" is selected */
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3.5rem' }}>
-          {groupedSections.map((group, groupIdx) => {
-            const letter = String.fromCharCode(65 + groupIdx); // A, B, C, D, E, F
+      {/* Category filter pills shown when Full Portfolio is toggled */}
+      {isFullPortfolio && (
+        <div className="portfolio-category-nav" role="tablist" aria-label="Portfolio Categories">
+          {CATEGORIES.map((cat) => {
+            const isActive = selectedCategory === cat.id;
             return (
-              <div key={group.id} id={`group-${group.id}`}>
-                {/* Group Heading */}
-                <div style={{ marginBottom: '1.5rem', borderBottom: '1px solid var(--border-light)', paddingBottom: '0.75rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.65rem' }}>
-                    <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', color: 'var(--accent)', fontWeight: 700 }}>
-                      {letter}.
-                    </span>
-                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.35rem', fontWeight: 600, color: 'var(--text-main)' }}>
-                      {group.title}
-                    </h3>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>
-                      {group.sheets.length} sheets
-                    </span>
-                  </div>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.35rem', maxWidth: '750px' }}>
-                    {group.description}
-                  </p>
-                </div>
-
-                {/* Group Grid */}
-                <div className="gallery-grid">
-                  {group.sheets.map((sheet) => (
-                    <ProjectCard
-                      key={sheet.id}
-                      sheet={sheet}
-                      onOpenLightbox={(item) => onOpenLightbox(item, PORTFOLIO_PROJECTS)}
-                    />
-                  ))}
-                </div>
-              </div>
+              <button
+                key={cat.id}
+                type="button"
+                className={`button small ${isActive ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat.id)}
+                role="tab"
+                aria-selected={isActive}
+              >
+                {cat.shortTitle} ({cat.count})
+              </button>
             );
           })}
         </div>
       )}
+
+      {/* Vertical work items matching the video reference */}
+      <div className="work-list">
+        {displaySheets.map((item) => (
+          <article key={item.id} className="work-item">
+            <div
+              className="image thumb"
+              onClick={() => onOpenLightbox(item, displaySheets)}
+              role="button"
+              tabIndex={0}
+              aria-label={`View sheet: ${item.title}`}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onOpenLightbox(item, displaySheets);
+                }
+              }}
+            >
+              <img
+                src={item.image}
+                alt={`${item.title} (Page ${item.pageNumber})`}
+                loading="lazy"
+              />
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.caption}</p>
+          </article>
+        ))}
+      </div>
+
+      {/* Outlined Full Portfolio Button matching the reference video */}
+      <ul className="actions">
+        <li>
+          <button
+            type="button"
+            className="button"
+            onClick={() => {
+              setIsFullPortfolio(!isFullPortfolio);
+              if (!isFullPortfolio) {
+                // Scroll slightly to keep place
+                const el = document.getElementById('two');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
+            {isFullPortfolio ? 'Show Recent Only' : 'Full Portfolio'}
+          </button>
+        </li>
+      </ul>
     </section>
   );
 };

@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { ProjectSheet } from './data/portfolioData';
+import { PERSONAL_INFO } from './data/portfolioData';
 import { Sidebar } from './components/Sidebar';
 import { AboutSection } from './components/AboutSection';
-import { SkillsSection } from './components/SkillsSection';
 import { GallerySection } from './components/GallerySection';
 import { ContactSection } from './components/ContactSection';
-import { Footer } from './components/Footer';
 import { Lightbox } from './components/Lightbox';
 import './styles/portfolio.css';
 
 export function App() {
   const [activeSheet, setActiveSheet] = useState<ProjectSheet | null>(null);
   const [activeList, setActiveList] = useState<ProjectSheet[]>([]);
-  const [activeSection, setActiveSection] = useState<string>('work');
 
   // Open Lightbox handler
   const handleOpenLightbox = (sheet: ProjectSheet, list: ProjectSheet[]) => {
@@ -41,64 +39,48 @@ export function App() {
     setActiveSheet(activeList[nextIndex]);
   };
 
-  // Scroll spy for sidebar nav items
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['about', 'work', 'skills', 'contact'];
-      const scrollY = window.scrollY;
-
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
-        if (el) {
-          const top = el.offsetTop - 120;
-          const height = el.offsetHeight;
-          if (scrollY >= top && scrollY < top + height) {
-            setActiveSection(sectionId);
-            break;
-          }
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const currentIndex = activeSheet && activeList.length > 0 
-    ? activeList.findIndex(item => item.id === activeSheet.id) 
-    : 0;
-
   return (
-    <div className="portfolio-layout">
-      {/* Strata-style Sidebar (Desktop) / Top Hero (Mobile) */}
-      <Sidebar activeSection={activeSection} />
+    <div id="wrapper">
+      {/* Header (Top Hero on Mobile, Fixed Sidebar on Desktop) */}
+      <Sidebar />
 
-      {/* Main Content Column */}
-      <main className="portfolio-main">
-        {/* About & Education */}
+      {/* Main Content Area */}
+      <div id="main">
+        {/* Section One: Intro / About */}
         <AboutSection />
 
-        {/* Recent Work Gallery (Primary Visual Core) */}
+        <hr />
+
+        {/* Section Two: Recent Work & Full Portfolio */}
         <GallerySection onOpenLightbox={handleOpenLightbox} />
 
-        {/* Technical Skills & Specializations */}
-        <SkillsSection />
+        <hr />
 
-        {/* Get In Touch */}
+        {/* Section Three: Get In Touch */}
         <ContactSection />
+      </div>
 
-        {/* Minimal Footer */}
-        <Footer />
-      </main>
+      {/* Mobile Footer (shown at bottom on mobile matching video frame) */}
+      <footer id="mobile-footer">
+        <div className="footer-inner">
+          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 0.5em 0' }}>
+            <li>&copy; {PERSONAL_INFO.name}</li>
+            <li>Diploma in Architecture &middot; {PERSONAL_INFO.institute}</li>
+          </ul>
+          <p style={{ margin: 0, fontSize: '0.85em' }}>
+            <a href={`mailto:${PERSONAL_INFO.email}`} className="dotted-link">{PERSONAL_INFO.email}</a>
+            {' '}&middot;{' '}
+            <a href={`tel:${PERSONAL_INFO.phone}`} className="dotted-link">+91 {PERSONAL_INFO.phone}</a>
+          </p>
+        </div>
+      </footer>
 
-      {/* Lightbox Modal */}
+      {/* Poptrox-style Lightbox Modal */}
       <Lightbox
         sheet={activeSheet}
         onClose={handleCloseLightbox}
         onPrev={handlePrevSheet}
         onNext={handleNextSheet}
-        currentIndex={currentIndex}
-        totalCount={activeList.length}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import type { ProjectSheet } from '../data/portfolioData';
 
 interface LightboxProps {
@@ -6,27 +6,14 @@ interface LightboxProps {
   onClose: () => void;
   onPrev: () => void;
   onNext: () => void;
-  currentIndex: number;
-  totalCount: number;
 }
 
 export const Lightbox: React.FC<LightboxProps> = ({
   sheet,
   onClose,
   onPrev,
-  onNext,
-  currentIndex,
-  totalCount
+  onNext
 }) => {
-  const [isZoomed, setIsZoomed] = useState(false);
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  // Reset zoom when sheet changes
-  useEffect(() => {
-    setIsZoomed(false);
-  }, [sheet?.id]);
-
   // Handle keyboard events (Escape, Left, Right)
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!sheet) return;
@@ -49,9 +36,6 @@ export const Lightbox: React.FC<LightboxProps> = ({
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    // Focus close button on mount
-    closeBtnRef.current?.focus();
-
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
@@ -64,85 +48,44 @@ export const Lightbox: React.FC<LightboxProps> = ({
 
   return (
     <div 
-      className="lightbox-backdrop" 
-      ref={modalRef}
+      className="poptrox-overlay" 
       role="dialog" 
       aria-modal="true" 
       aria-label={`Drawing Sheet: ${sheet.title}`}
       onClick={(e) => {
-        // Close if clicked outside image/controls
+        // Close if clicked on dark backdrop
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
     >
-      {/* Top Header Bar */}
-      <div className="lightbox-header">
-        <div className="lightbox-sheet-title">
-          <span>{sheet.title}</span>
-          {sheet.sheetLabel && (
-            <span style={{ fontSize: '0.85rem', color: '#82c49e', marginLeft: '0.75rem', fontWeight: 400 }}>
-              [{sheet.sheetLabel}]
-            </span>
-          )}
-        </div>
+      <div className="poptrox-box">
+        {/* Close Button at top-right of image */}
+        <button
+          type="button"
+          className="poptrox-closer"
+          onClick={onClose}
+          aria-label="Close lightbox"
+          title="Close (Esc)"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
 
-        <div className="lightbox-controls-top">
-          {/* Zoom Toggle Button */}
-          <button
-            type="button"
-            className="lightbox-btn"
-            onClick={() => setIsZoomed(!isZoomed)}
-            aria-label={isZoomed ? "Reset zoom" : "Zoom drawing details"}
-            title={isZoomed ? "Reset zoom (100%)" : "Zoom drawing (140%)"}
-          >
-            {isZoomed ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                <line x1="8" y1="11" x2="14" y2="11"/>
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                <line x1="11" y1="8" x2="11" y2="14"/>
-                <line x1="8" y1="11" x2="14" y2="11"/>
-              </svg>
-            )}
-          </button>
-
-          {/* Close Button */}
-          <button
-            type="button"
-            ref={closeBtnRef}
-            className="lightbox-btn"
-            onClick={onClose}
-            aria-label="Close lightbox"
-            title="Close (Esc)"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Lightbox Body with full image and navigation buttons */}
-      <div className="lightbox-body">
         {/* Previous Button */}
         <button
           type="button"
-          className="lightbox-nav-btn lightbox-prev"
+          className="poptrox-nav prev"
           onClick={(e) => {
             e.stopPropagation();
             onPrev();
           }}
           aria-label="Previous sheet"
-          title="Previous sheet (Left Arrow)"
+          title="Previous (Left Arrow)"
         >
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -150,52 +93,36 @@ export const Lightbox: React.FC<LightboxProps> = ({
         {/* Next Button */}
         <button
           type="button"
-          className="lightbox-nav-btn lightbox-next"
+          className="poptrox-nav next"
           onClick={(e) => {
             e.stopPropagation();
             onNext();
           }}
           aria-label="Next sheet"
-          title="Next sheet (Right Arrow)"
+          title="Next (Right Arrow)"
         >
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
 
-        {/* Image Frame - 100% aspect ratio preserved */}
-        <div 
-          className="lightbox-img-wrapper"
-          onClick={() => setIsZoomed(!isZoomed)}
-          title="Click to toggle zoom"
-        >
+        {/* Image Display */}
+        <div className="poptrox-image-wrap">
           <img
             src={sheet.image}
-            alt={`${sheet.title} - Academic Sheet Page ${sheet.pageNumber}`}
-            className={`lightbox-image ${isZoomed ? 'zoomed' : ''}`}
+            alt={sheet.title}
+            className="poptrox-image"
           />
         </div>
-      </div>
 
-      {/* Lightbox Footer Caption Bar */}
-      <div className="lightbox-footer">
-        <div className="lightbox-footer-header">
-          <span>{sheet.categoryTitle}</span>
-          <span>•</span>
-          <span>Sheet Page {sheet.pageNumber}</span>
-          <span>•</span>
-          <span>{currentIndex + 1} of {totalCount}</span>
-          {sheet.area && (
-            <>
-              <span>•</span>
-              <span>Area: {sheet.area}</span>
-            </>
-          )}
+        {/* Caption directly beneath the image */}
+        <div className="poptrox-caption">
+          <div>{sheet.title}</div>
+          <div className="poptrox-subcaption">
+            {sheet.categoryTitle} &middot; Page {sheet.pageNumber}
+            {sheet.area && ` &middot; ${sheet.area}`}
+          </div>
         </div>
-        <p className="lightbox-footer-desc">{sheet.caption}</p>
-        <span className="lightbox-keyboard-hint">
-          Keyboard navigation: Use ◄ Left / ► Right arrows to browse · Esc to close · Click image to toggle zoom
-        </span>
       </div>
     </div>
   );
