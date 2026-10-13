@@ -24,9 +24,13 @@ A minimalist, Strata-inspired architecture portfolio website presenting the acad
   - Zoom toggle for inspecting fine drawing details and schedules.
   - Background scroll lock and full accessibility support.
 - **Direct Communication & Contact**:
-  - Verified phone number (+91 9375778856), email (adilmansuri2024@gmail.com), and location (Panigate, Vadodara, Gujarat).
-  - Functional `tel:` and `mailto:` links with copy-to-clipboard buttons.
-  - Genuine mailto form submission that drafts directly to Adil's email.
+  - Verified phone number (+91 9737778856), WhatsApp (+91 9737778856), email (adilmansuri2024@gmail.com), and location (Panigate, Vadodara, Gujarat).
+  - Functional WhatsApp link, `tel:` call link, and direct `mailto:` actions.
+  - Interactive contact form with dual "Send via WhatsApp" and "Send via Email" buttons that deliver visitor inquiries directly.
+
+## Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/saadbombaywala/adil-mansuri-portfolio)
 
 ## Tech Stack
 
