@@ -119,7 +119,8 @@ export const Lightbox: React.FC<LightboxProps> = ({
         <div className="poptrox-caption">
           <div>{sheet.title}</div>
           <div className="poptrox-subcaption">
-            {sheet.categoryTitle} &middot; Page {sheet.pageNumber}
+            {sheet.categoryTitle} &middot; Page {sheet.pageNumber} of 57
+            {sheet.sheetLabel && ` &middot; ${sheet.sheetLabel}`}
             {sheet.area && ` &middot; ${sheet.area}`}
           </div>
         </div>

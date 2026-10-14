@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CATEGORIES, PORTFOLIO_PROJECTS } from '../data/portfolioData';
+import { CATEGORIES, PORTFOLIO_PROJECTS, getSectionSheets } from '../data/portfolioData';
 import type { ProjectSheet } from '../data/portfolioData';
 
 interface GallerySectionProps {
@@ -60,14 +60,14 @@ export const GallerySection: React.FC<GallerySectionProps> = ({ onOpenLightbox }
           <article key={item.id} className="work-item">
             <div
               className="image thumb"
-              onClick={() => onOpenLightbox(item, displaySheets)}
+              onClick={() => onOpenLightbox(item, getSectionSheets(item.category))}
               role="button"
               tabIndex={0}
               aria-label={`View sheet: ${item.title}`}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  onOpenLightbox(item, displaySheets);
+                  onOpenLightbox(item, getSectionSheets(item.category));
                 }
               }}
             >
